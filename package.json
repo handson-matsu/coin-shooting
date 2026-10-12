@@ -1,0 +1,9 @@
+{
+  "name": "coin-shooting",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/analysis.test.js && node tests/motion.test.js && node tests/abort.test.js",
+    "simulate": "node tests/model.test.js"
+  }
+}

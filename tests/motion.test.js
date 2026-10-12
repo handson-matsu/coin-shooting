@@ -1,0 +1,3 @@
+import assert from 'node:assert/strict';
+import {easeOut,slidePosition,rubberStretch,SPEEDS} from '../motion.js';
+assert.deepEqual(SPEEDS,[1,3,10,30]);assert.equal(easeOut(0),0);assert.equal(easeOut(1),1);const increments=[.25,.5,.75,1].map((p,i)=>easeOut(p)-easeOut(i*.25));assert.ok(increments.every((v,i)=>!i||v<increments[i-1]));assert.deepEqual(slidePosition(0,50,650,20),{x:50,y:180});assert.deepEqual(slidePosition(1,50,650,20),{x:650,y:200});assert.equal(slidePosition(.5,50,650,0).y,180);assert.ok(rubberStretch(12)>rubberStretch(4));assert.equal(rubberStretch(12,.18),0);assert.equal(rubberStretch(4,1),0);console.log('PASS: monotonic slowing slide, exact landing, display-only transverse offset, pull-dependent stretch and recoil, all 4 speeds');

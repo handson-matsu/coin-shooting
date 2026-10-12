@@ -1,0 +1,6 @@
+import assert from 'node:assert/strict';
+import {MODEL,generateDistance,seeded} from '../model.js';
+import {summary,regression} from '../analysis.js';
+const rng=seeded(20261012),rows=[],report=[];for(const pull of [4,8,12])for(const weight of [3,6,12]){const values=Array.from({length:20000},()=>generateDistance(pull,weight,rng)),s=summary(values),truth=MODEL.intercept+MODEL.pull*pull+MODEL.weight*weight;assert.ok(Math.abs(s.mean-truth)<.3);assert.ok(Math.abs(s.sd-MODEL.errorSD)<.3);assert.ok(s.min>0);values.forEach(distance=>rows.push({pull,weight,distance}));report.push({pull,weight,trueMean:truth,mean:s.mean.toFixed(3),sd:s.sd.toFixed(3),min:s.min.toFixed(3),max:s.max.toFixed(3)});}
+// Fit a representative subset rather than a large argument-spread array.
+const fit=regression(rows.filter((_,i)=>i%20===0),['pull','weight']);assert.ok(Math.abs(fit.coefficients.pull-12)<.1);assert.ok(Math.abs(fit.coefficients.weight+3)<.1);assert.throws(()=>generateDistance(0,6));assert.equal(generateDistance(8,6,seeded(42)),generateDistance(8,6,seeded(42)));console.table(report);console.log('PASS: 180000 simulated shots, positive ranges, expected means/SD, recoverable regression coefficients',fit.coefficients);
