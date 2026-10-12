@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node tests/analysis.test.js && node tests/motion.test.js && node tests/abort.test.js",
+    "test": "node tests/analysis.test.js && node tests/motion.test.js && node tests/abort.test.js && node tests/access-counter.test.cjs",
     "simulate": "node tests/model.test.js"
   }
 }

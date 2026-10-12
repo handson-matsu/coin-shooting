@@ -140,3 +140,30 @@ tests/continuous.cjsは成功。30/50/100回の設定と、スマホ幅で実際
 ## iPad Safariの検証範囲
 
 実機iPad Safariは未検証です。タブレットサイズのレイアウトはChromeで確認しました。Safariへの配慮として、通常のCanvas 2D・requestAnimationFrame・タイマーを使い、描画は飛行中の射撃場だけ、グラフは毎射撃の更新に限定しています。キャンバスを過大な端末ピクセル比で拡大せず、保存エラーを捕捉し、再読み込み時に連続射撃を停止します。バックグラウンド移行時も連続射撃を停止します。
+
+## 共用GASアクセス記録（2026-10-12）
+
+### 作業場所・Git確認
+
+- 作業フォルダ・Gitルート：`/Users/kmatsubara15/Documents/GitHub/coin-shooting`
+- remote：`https://github.com/handson-matsu/coin-shooting.git`
+- ブランチ：`main`
+- 作業開始時：未コミット変更なし。
+- `stat-golf`：開始時・終了時とも `git status --short` は空。参照のみで、変更していません。
+- ファイル移動・Git設定変更・コミット・pushなし。
+
+### 実装
+
+`tower-of-hanoi/index.html` と `stat-golf/access-counter.js` にある同一の既存GAS URL・GET設定を参照。`app=coin-shooting` のみ指定し、独立した `access-counter.js` を1か所から読み込みます。同一document内の重複実行もガードし、再試行しません。ページ再読み込みでは新しいdocumentとして1回送信します。実験処理との接続はありません。GASや他アプリのコードは変更していません。
+
+既存通信は `no-cors` で応答本文を読めず、累計数を取得するAPI仕様もありません。ユーザーの追記に従い累計表示を省略しました。GASソース・スプレッドシートは直接確認していないため、サーバー上での保存とアプリ別集計の実確認は未実施です。
+
+### 検証結果
+
+- 既存の analysis / motion / abort 単体テスト：成功。
+- access-counter 単体テスト：成功。送信先・パラメータ・全fetch設定・1回のみ・重複実行・失敗・fetchなし・応答なしを確認。
+- Chrome / iPad画面設定のカウンターブラウザテスト：成功。成功・ネットワーク失敗・同期例外・応答なしの4ケースで、各読み込み1回、リロードで新たに1回、条件変更・実験開始・単発/連続射撃・階級幅変更・回帰切替による追加送信なし。10回射撃完了と保存/復元、実行時エラーなし。
+- 既存 browser.cjs：成功。条件固定/解除、単発/連続射撃、一時停止/再開、保存/復元、3実験、比較、単/重回帰、予測、CSV、100枚コイン、PC/タブレット/スマホ、初期化。
+- WebKit：未検証。Playwright用WebKit実行ファイルが環境にないため起動できませんでした。iPad Safari実機も未検証。
+- すべての実施したブラウザテストでGAS通信を捕捉。実GASへの送信0回。
+- `git diff --check`：成功。

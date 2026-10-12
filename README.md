@@ -114,3 +114,17 @@ node tests/prediction-ui.cjs
 - charts.js：コインの蓄積・グラフ描画
 - app.js：実験状態・条件固定・射撃・保存・操作
 - tests/：計算・モデルシミュレーション・ブラウザテスト
+
+## アクセス記録
+
+`tower-of-hanoi`・`stat-golf` と同じ既存GASへ、`app=coin-shooting` を指定したGETをページ読み込みごとに1回だけ送ります。再読み込みは新しいアクセスです。実験開始・条件変更・射撃・分析・CSV操作からは送信しません。独立した `access-counter.js` を `defer` で読み込み、応答待ち・再試行・定期通信は行いません。通信が失敗しても、実験・分析・保存を続けられます。
+
+既存実装と同じ `no-cors` / `cache:no-store` / `credentials:omit` / `keepalive:true` を使用します。GASのソースや集計先は変更していません。累計取得APIが確認できないため、ユーザーの指定により今回は累計表示を省略しています。GAS側のアプリ別保存・集計は既存の `app` パラメータの仕様に依存します。
+
+ローカルプレビューでもアクセスを送信します。`tests/browser.cjs` と `tests/access-counter-browser.cjs` はGAS通信を捕捉し、実際のアクセスを増やしません。他のブラウザテストを実行するときもGAS通信を捕捉してください。
+
+- `npm test`：計算・動作状態・カウンター単体テスト
+- `node tests/access-counter-browser.cjs`：1回送信、再読み込み、実験操作、成功・通信失敗・同期例外・応答なしを検証
+- `COIN_SHOOTING_BROWSER=webkit node tests/access-counter-browser.cjs`：WebKitがインストールされた環境で同じ検証（iPad設定）
+
+ブラウザテストはローカルHTTPサーバーが必要です。`COIN_SHOOTING_URL` でURL、`COIN_SHOOTING_PLAYWRIGHT` でPlaywrightのパスを指定できます。
